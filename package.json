@@ -4,7 +4,7 @@
   "description": "a simple web scraper for scraping stuff.",
   "main": "scrap.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node scrape.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/NotAPornSite/NotAWebScraper/issues"
   },
-  "homepage": "https://github.com/NotAPornSite/NotAWebScraper#readme"
+  "homepage": "https://github.com/NotAPornSite/NotAWebScraper#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2"
+  }
 }
