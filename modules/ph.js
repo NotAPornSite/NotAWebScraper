@@ -1,23 +1,26 @@
-const $ = require("cheerio"),
+const JSSoup = require("jssoup").default,
 	  request = require("request-promise"); 
 
 class PhScraper {
 
 	constructor(interval){
 		this.interval = interval;
-		this.url = "https://en.wikipedia.org/wiki/List_of_Presidents_of_the_United_States";
+		this.url = "https://www.pornhub.com";
+		this.categories = []; 
 	}
 
-	start(){
+	start() {
 		console.log("starting the scrape for ph.");
-		request(this.url).then(function(html){
-			//success!
-			const wikiUrls = [];
-			for (let i = 0; i < 45; i++) {
-			  wikiUrls.push($('big > a', html)[i].attribs.href);
-			}
-			console.log(wikiUrls);
-		  });
+		this.getCategories();
+	}
+
+	getCategories() {
+		request(this.url+"/categories").then(html => {
+			var soup = new JSSoup(html);
+			soup.findAll('a').forEach((link)=>{
+				console.log(link.attrs["href"]);
+			});
+		});
 	}
 }
 

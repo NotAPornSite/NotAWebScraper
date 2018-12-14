@@ -5,6 +5,6 @@ const rs = new RedditScraper(100),
       ps = new PhScraper(100);
 
 
-rs.start();
+//rs.start();
 ps.start();
 
