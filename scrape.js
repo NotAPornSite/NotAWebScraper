@@ -5,6 +5,10 @@ const rs = new RedditScraper(100),
       ps = new PhScraper(100);
 
 
-//rs.start();
-ps.start();
+rs.start().then(()=>{
+    console.log("saving");
+    rs.testPage += "</body></html>";
+    rs.save();
+});
+//ps.start();
 

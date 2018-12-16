@@ -3,34 +3,65 @@ const JSSoup = require('jssoup').default,
       request = require("request-promise"),
       fs = require("fs");
 
-let getLinks = function(href){
-    let page =  "<html><head></head><body>";
-    var options = {
-        uri: 'https://www.reddit.com/r/gonewild',
-        headers: {
-            'Cookie': 'over18=1'
-        }    
-    };
-     
-    request(options).then((html)=>{
-        let soup = new JSSoup(html);
 
-        let links = soup.findAll("img");
+let getSubReddits = function(){
+    let subreddits =  [];
+        var options = {
+            uri: 'https://www.reddit.com/r/ListOfSubreddits/wiki/nsfw',
+            headers: {
+                'Cookie': 'over18=1'
+            }    
+        };
+         
+        request(options).then((html)=>{
+            let soup = new JSSoup(html);
+    
+            let links = soup.findAll("a");
 
-        links.forEach((link)=>{
-            page += "<img src='"+link.attrs["src"]+"'/>";
-            console.log(link.attrs["src"]);
             
-        });
-        page += "</body></html>";
-        console.log(page);
-        fs.writeFile('test.html', page);
-    }).catch((err)=>{
-        //console.error(err);
-    });
-};
+            links.forEach((link)=>{
+                console.log(link.attrs["href"]);
+                if(!subreddits.includes(link.attrs["href"]) && link.attrs["href"] && link.attrs["href"][0] === "/" && link.attrs["href"][1] === "r"){
+                    subreddits.push("https://www.reddit.com"+link.attrs["href"]);
+                }
+            });
+            fs.writeFile('./data/subreddits.json', JSON.stringify(subreddits));
 
-getLinks("https://www.reddit.com/r/gonewild");
+        }).catch((err)=>{
+            console.error(err);
+        });
+};
+getSubReddits();
+
+
+// let getLinks = function(href){
+//     let page =  "<html><head></head><body>";
+//     var options = {
+//         uri: 'https://www.reddit.com/r/gonewild',
+//         headers: {
+//             'Cookie': 'over18=1'
+//         }    
+//     };
+     
+//     request(options).then((html)=>{
+//         let soup = new JSSoup(html);
+
+//         let links = soup.findAll("img");
+
+//         links.forEach((link)=>{
+//             page += "<img src='"+link.attrs["src"]+"'/>";
+//             console.log(link.attrs["src"]);
+            
+//         });
+//         page += "</body></html>";
+//         console.log(page);
+//         fs.writeFile('test.html', page);
+//     }).catch((err)=>{
+//         //console.error(err);
+//     });
+// };
+
+// getLinks("https://www.reddit.com/r/gonewild");
 
 // let githubLinks = [],
 //     visited = [];
