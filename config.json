@@ -1,0 +1,19 @@
+{
+	"database": {
+		"host": "localhost",
+		"user": "root",
+		"password": "password",
+		"files": [
+			"npc",
+			"resource",
+			"category",
+			"resource_category"
+		],
+		"tables": [
+			"resource",
+			"category",
+			"resource_category"
+		]
+
+	}
+}
