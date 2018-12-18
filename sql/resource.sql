@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS npc.resource (
      id INT NOT NULL AUTO_INCREMENT,
-	 url VARCHAR(2083),
-     post_url VARCHAR(2083),
-	 source VARCHAR(200) NOT NULL,
+	url VARCHAR(2083) NOT NULL UNIQUE,
+     post_url VARCHAR(2083) NOT NULL UNIQUE,
+	source VARCHAR(200) NOT NULL,
+     source_host VARCHAR(200) NOT NULL,
      PRIMARY KEY (id)
 );

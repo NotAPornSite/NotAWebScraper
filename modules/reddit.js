@@ -1,6 +1,7 @@
 const JSSoup = require("jssoup").default,
 	  request = require("request-promise"),
-	  fs = require("fs"); 
+	  fs = require("fs"),
+	  mysql = require('mysql'); 
 
 class RedditScraper {
 
@@ -18,11 +19,51 @@ class RedditScraper {
 		this.subreddits = JSON.parse(fs.readFileSync("./data/subreddits.json"));
 	}
 
+	/*
+	a function to get the database config from the root config.json file.
+	@return an object containing the database config
+	*/ 
+	getDataBaseConfig(){
+		return JSON.parse(fs.readFileSync("./config.json"))["database"];
+	};
+
+	/*
+		a function to get a connection to the database
+		@return a mysql connection
+	*/
+	getConnection(){
+		let config = this.getDataBaseConfig();
+		return mysql.createConnection({
+			host: config["host"],
+			user: config["user"],
+			password: config["password"]
+		}); 
+	};
+
 	save(){
-		fs.writeFile('./data/images.json', JSON.stringify(this.images));
-		fs.writeFile('./data/videos.json', JSON.stringify(this.videos));
-		fs.writeFile('./data/testPage.html', this.testPage);
-		fs.writeFile('./data/alllink.json',  JSON.stringify(this.allVideos));
+		// fs.writeFile('./data/images.json', JSON.stringify(this.images));
+		// fs.writeFile('./data/videos.json', JSON.stringify(this.videos));
+		// fs.writeFile('./data/testPage.html', this.testPage);
+		 fs.writeFile('./data/alllink.json',  JSON.stringify(this.allImages));
+
+		let sql = "INSERT INTO npc.resource (url, post_url, source, source_host) VALUES ? ON DUPLICATE KEY UPDATE url=VALUES(url),post_url=VALUES(post_url)",
+			con = this.getConnection(),
+			values = [];
+
+		for(let category in this.images){
+			this.images[category].forEach(image => {
+				values.push([image.url, image.post_url, category, "https://reddit.com"]);
+			});
+		}
+	  
+		con.connect(err => {
+			//if (err) console.log(err);
+			con.query(sql, [values], (err, result) => {
+				if (err) console.log(err);
+				console.log("storing links was successful!");
+				con.end();
+			});
+		});
 	}
 
 	start(){
@@ -44,11 +85,11 @@ class RedditScraper {
 						posts = soup.findAll("a");
 
 					posts.forEach(post=>{
-						if(post.attrs["href"].includes("/comments/")){
+						if(post.attrs["href"] && post.attrs["href"].includes("/comments/")){
 							post.descendants.forEach(element =>{
 								if(element.name === "img"){
-									if(!this.allImages.includes(element.attrs["src"])){ //if not found in any of the categories then add it 
-										this.images[link].push(element.attrs["src"]);
+									if(!this.allImages.includes(element.attrs["src"]) && element.attrs["src"]){ //if not found in any of the categories then add it 
+										this.images[link].push({url: element.attrs["src"], post_url: post.attrs["href"]});
 										this.allImages.push(element.attrs["src"]);
 										this.testPage += "<img src='"+element.attrs["src"]+"'/>";
 									}
@@ -71,12 +112,9 @@ class RedditScraper {
 					// 		this.testPage += "<video><source src='"+video.attrs["src"]+"' type='video/mp4'></source></video>";
 					// 	}
 					// });
-
-					this.save();
 					res();
 				}).catch(err=>{
-					this.save();
-					rej(err);
+					res();
 				});
 			});
 			promises.push(promise);
