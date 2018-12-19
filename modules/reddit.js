@@ -46,13 +46,14 @@ class RedditScraper {
 		// fs.writeFile('./data/testPage.html', this.testPage);
 		 fs.writeFile('./data/alllink.json',  JSON.stringify(this.allImages));
 
-		let sql = "INSERT INTO npc.resource (url, post_url, source, source_host) VALUES ? ON DUPLICATE KEY UPDATE url=VALUES(url),post_url=VALUES(post_url)",
+		let sql = "INSERT INTO npc.resource (url, post_url, source, source_host, date_time) VALUES ? ON DUPLICATE KEY UPDATE url=VALUES(url),post_url=VALUES(post_url)",
 			con = this.getConnection(),
-			values = [];
-
+			values = [],
+			dateFound = Date.now();
+		
 		for(let category in this.images){
 			this.images[category].forEach(image => {
-				values.push([image.url, image.post_url, category, "https://reddit.com"]);
+				values.push([image.url, image.post_url, category, "https://reddit.com"],dateFound);
 			});
 		}
 	  

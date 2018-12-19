@@ -36,6 +36,7 @@ let runFile = filename => {
 		con.query(sql, (err, result) => {
 			if (err) throw err;
 			console.log(filename+".sql ran successfully!");
+			console.log(result);
 			con.end();
 		});
 	  });
