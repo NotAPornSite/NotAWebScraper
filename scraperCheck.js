@@ -34,7 +34,7 @@ app.get("/",(req,res)=>{
 		//if (err) console.log(err);
 		con.query(sql,(err, result) => {
 			if (err) console.log(err);
-			if(lastDate > result[0].lastDate){
+			if(lastDate < result[0].lastDate){
 				lastDate = result[0].lastDate;
 			}
 			let html = `
