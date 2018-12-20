@@ -25,7 +25,7 @@ let getConnection = () =>{
 	}); 
 };
 
-app.get("/test",(req,res)=>{
+app.get("/",(req,res)=>{
 	let sql = "select url from npc.resource order by RAND() desc limit 0,10",
 		con = getConnection(),
 		body = "",
@@ -73,7 +73,7 @@ app.get("/test",(req,res)=>{
 								if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
 									if(!isFetch){
 										isFetch = true;
-										fetch('http://localhost:8080/test?ajax=true&start='+currentStart+'&stop='+currentStop)
+										fetch('http://localhost:8080/?ajax=true&start='+currentStart+'&stop='+currentStop)
 										.then(function(response) {
 											console.log(response);
 											response.text().then((text)=>{
