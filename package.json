@@ -4,7 +4,8 @@
   "description": "a simple web scraper for scraping stuff.",
   "main": "scrap.js",
   "scripts": {
-    "start": "node scrape.js"
+    "start": "node scrape.js",
+    "server": "node scraperCheck.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,8 @@
   },
   "homepage": "https://github.com/NotAPornSite/NotAWebScraper#readme",
   "dependencies": {
+    "express": "^4.16.4",
+    "http": "0.0.0",
     "jssoup": "0.0.10",
     "mysql": "^2.16.0",
     "node-cron": "^2.0.3",
