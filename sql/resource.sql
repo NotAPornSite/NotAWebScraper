@@ -5,5 +5,6 @@ CREATE TABLE IF NOT EXISTS npc.resource (
 	source VARCHAR(200) NOT NULL,
      source_host VARCHAR(200) NOT NULL,
      date_found DATETIME NOT NULL,
+     type VARCHAR(20) NOT NULL,
      PRIMARY KEY (id)
 );
