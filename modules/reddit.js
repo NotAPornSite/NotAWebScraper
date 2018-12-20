@@ -65,6 +65,13 @@ class RedditScraper {
 				con.end();
 			});
 		});
+
+		this.subreddits = [];
+		this.images = {}; //images in their categories
+		this.allImages = []; //all images found
+		this.videos = {};
+		this.allVideos = []; 
+		this.testPage = "<html><head></head><body>";
 	}
 
 	start(){

@@ -81,6 +81,18 @@ let dropAll = () => {
 	});
 };
 
+let runSql = (sql) => {
+	let con = getConnection();
+	con.connect(err => {
+		if (err) throw err;
+		con.query(sql, (err, result) => {
+			if (err) throw err;
+			console.log(result);
+			con.end();
+		});
+	});
+};
+
 /*
 	a function to run the app.
 */
@@ -93,6 +105,8 @@ function main() {
 		}else{
 			drop(process.argv[3]);				//drop a specific table
 		}
+	}else if (process.argv[2] === "-s"){
+		runSql(process.argv[3]);
 	}else{
 		runFile(process.argv[2]);				//run a specific file
 	}
