@@ -5,7 +5,8 @@
   "main": "scrap.js",
   "scripts": {
     "start": "node scrape.js",
-    "server": "node scraperCheck.js"
+    "server": "node scraperCheck.js",
+    "test": "node testServer.js"
   },
   "repository": {
     "type": "git",
