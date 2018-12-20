@@ -5,21 +5,25 @@ const RedditScraper = require("./modules/reddit"),
 const rs = new RedditScraper(100),
       ps = new PhScraper(100);
 
-    rs.start().then(()=>{
-    console.log("saving");
-    rs.testPage += "</body></html>";
-    rs.save();
-}).catch(err =>{
-    console.log(err);
-});
-
-setInterval(() => {
+rs.loadSubReddits().then(()=>{
     rs.start().then(()=>{
         console.log("saving");
         rs.testPage += "</body></html>";
         rs.save();
     }).catch(err =>{
         console.log(err);
+    });
+});
+
+setInterval(() => {
+    rs.loadSubReddits().then(()=>{
+        rs.start().then(()=>{
+            console.log("saving");
+            rs.testPage += "</body></html>";
+            rs.save();
+        }).catch(err =>{
+            console.log(err);
+        });
     });
 }, 1000 * 60 * 60);
 // cron.schedule('6 * * * *', () => {

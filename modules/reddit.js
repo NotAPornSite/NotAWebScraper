@@ -16,7 +16,26 @@ class RedditScraper {
 	}
 
 	loadSubReddits(){
-		this.subreddits = JSON.parse(fs.readFileSync("./data/subreddits.json"));
+		return new Promise((res,rej)=>{
+			let sql = "SELECT source FROM npc.scrape_source WHERE host = 'https://reddit.com'",
+				con = this.getConnection();
+	  
+			con.connect(err => {
+				//if (err) console.log(err);
+				con.query(sql, (err, result) => {
+					if (err){
+						console.log(err);
+					}else{
+						console.log("subreddits loaded!");
+						result.forEach((sub) => {
+							this.subreddits.push(sub.source);
+						});
+					}
+					con.end();
+					res();
+				});
+			});
+		});
 	}
 
 	/*
@@ -49,19 +68,21 @@ class RedditScraper {
 		let sql = "INSERT INTO npc.resource (url, post_url, source, source_host, date_found, type) VALUES ? ON DUPLICATE KEY UPDATE url=VALUES(url),post_url=VALUES(post_url)",
 			con = this.getConnection(),
 			values = [],
-			dateFound = new Date().toISOString().slice(0, 19).replace('T', ' ');
-		
+			dateFound = new Date().toISOString().slice(0, 19).replace('T', ' ')
 		for(let category in this.images){
 			this.images[category].forEach(image => {
 				values.push([image.url, image.post_url, category, "https://reddit.com",dateFound,"image"]);
 			});
 		}
-	  
+		
 		con.connect(err => {
 			//if (err) console.log(err);
 			con.query(sql, [values], (err, result) => {
-				if (err) console.log(err);
-				console.log("storing links was successful!");
+				if (err){
+					console.log(err);
+				}else{
+					console.log("storing links was successful!");
+				}
 				con.end();
 			});
 		});
@@ -77,7 +98,6 @@ class RedditScraper {
 	start(){
 		console.log("starting the scrape for reddit.");
 		let promises = [];
-		this.loadSubReddits();
 		this.subreddits.forEach(link =>{ //loop through each subreddit
 			this.images[link] = [];
 			this.videos[link] = [];
