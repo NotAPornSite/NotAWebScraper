@@ -37,22 +37,8 @@ app.get("/",(req,res)=>{
 			if(lastDate < result[0].lastDate){
 				lastDate = result[0].lastDate;
 			}
-			let html = `
-				<!DOCTYPE html>
-				<html>
-					<head>
-						<meta charset="utf-8">
-						<title>Scraper Healthcheck</title>
-					</head>
-					<body>
-						<span>Last Run Date: ${lastDate}</span><br>
-						<span>Link Count: ${result[0].count}</span>
-					</body>
-				</html>
-			`;
 
-			res.send(html.toString());
-
+			res.json({lastDate: lastDate, count: result[0].count});
 			con.end();
 		});
 	});
