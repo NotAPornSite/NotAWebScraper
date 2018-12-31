@@ -1,6 +1,9 @@
 const JSSoup = require("jssoup").default,
 	  request = require("request-promise"); 
 
+//get all of the categories from the ph category page. scan the categories 
+//and collect the post links. then use /embed/posthash to get the proper iframe url.
+
 class PhScraper {
 
 	constructor(interval){

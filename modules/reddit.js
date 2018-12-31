@@ -69,11 +69,19 @@ class RedditScraper {
 			con = this.getConnection(),
 			values = [],
 			dateFound = new Date().toISOString().slice(0, 19).replace('T', ' ')
+
 		for(let category in this.images){
 			this.images[category].forEach(image => {
 				values.push([image.url, image.post_url, category, "https://reddit.com",dateFound,"image"]);
 			});
 		}
+
+		// for(let category in this.videos){
+		// 	this.videos[category].forEach(video =>{
+		// 		console.log(video.url, video.post_url);
+		// 		//values.push([video.url, video.post_url, category, "https://reddit.com",dateFound,"video"]);
+		// 	});
+		// }
 		
 		con.connect(err => {
 			//if (err) console.log(err);
@@ -114,6 +122,16 @@ class RedditScraper {
 
 					posts.forEach(post=>{
 						if(post.attrs["href"] && post.attrs["href"].includes("/comments/")){
+
+							// let iframe = post.previousElement.previousElement.nextSibling.nextSibling.nextElement.nextElement.nextElement.nextElement;
+							// if(iframe.name === "iframe" && iframe.attrs["src"]){
+							// 	console.log("found");
+							// 	if(!this.allVideos.includes(iframe.attrs["src"])){ //if not found in any of the categories then add it 
+							// 		this.videos[link].push({url: iframe.attrs["src"], post_url: post.attrs["href"]});
+							// 		this.allVideos.push(iframe.attrs["src"]);
+							// 	}
+							// }
+
 							post.descendants.forEach(element =>{
 								if(element.name === "img"){
 									if(!this.allImages.includes(element.attrs["src"]) && element.attrs["src"]){ //if not found in any of the categories then add it 
@@ -122,24 +140,11 @@ class RedditScraper {
 										this.testPage += "<img src='"+element.attrs["src"]+"'/>";
 									}
 								}
-								// else if (element.name === "video"){ //<--------- I CANT FIGURE OUT WHY THIS DOESNT WORK
-									
-								// 	element.descendants.forEach(source =>{
-								// 		console.log(source.attrs["type"]);
-								// 		this.allVideos.push(source.attrs["src"]);
-								// 	});
-								// }
 							});
+							
 						}
 					});
 						
-					// videos.forEach(video =>{
-					// 	if(!this.allVideos.includes(video.attrs["src"])){ //if not found in any of the categories then add it 
-					// 		this.videos[link].push(video.attrs["src"]);
-					// 		this.allVideos.push(video.attrs["src"]);
-					// 		this.testPage += "<video><source src='"+video.attrs["src"]+"' type='video/mp4'></source></video>";
-					// 	}
-					// });
 					res();
 				}).catch(err=>{
 					res();
