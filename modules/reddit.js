@@ -5,8 +5,7 @@ const JSSoup = require("jssoup").default,
 
 class RedditScraper {
 
-	constructor(interval){
-		this.interval = interval;
+	constructor(){
 		this.subreddits = [];
 		this.images = {}; //images in their categories
 		this.allImages = []; //all images found
