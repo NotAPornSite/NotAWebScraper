@@ -139,9 +139,8 @@ class PhScraper {
 								this.allVideos.push(obj.post_url);
 							}
 						});
-					
+						res();
 					});
-					res();
 				}).catch(err=>{
 					res();
 				});;
