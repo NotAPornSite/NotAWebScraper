@@ -62,14 +62,16 @@ class PhScraper {
 		let sql = "INSERT INTO npc.resource (url, post_url, source, source_host, date_found, type) VALUES ? ON DUPLICATE KEY UPDATE url=VALUES(url),post_url=VALUES(post_url)",
 			con = this.getConnection(),
 			values = [],
-			dateFound = new Date().toISOString().slice(0, 19).replace('T', ' ')
+			dateFound = new Date().toISOString().slice(0, 19).replace('T', ' '),
+			checkArr = [];
 
 		for(let category in this.videos){
 			this.videos[category].forEach(video => {
 				let arr = [video.url, video.post_url, category, "https://pornhub.com",dateFound,"video"];
-				if(!values.includes(arr)){
+				if(!checkArr.includes(arr[1])){
 					values.push(arr);
 				}
+				checkArr.push(arr[1]);
 			});
 		}
 		
