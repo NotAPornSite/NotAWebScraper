@@ -88,7 +88,7 @@ class RedditScraper {
 				if (err){
 					console.log(err);
 				}else{
-					console.log("storing links was successful!");
+					console.log("storing reddit links was successful!");
 				}
 				con.end();
 			});

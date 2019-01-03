@@ -66,7 +66,10 @@ class PhScraper {
 
 		for(let category in this.videos){
 			this.videos[category].forEach(video => {
-				values.push([video.url, video.post_url, category, "https://pornhub.com",dateFound,"video"]);
+				let arr = [video.url, video.post_url, category, "https://pornhub.com",dateFound,"video"];
+				if(!values.includes(arr)){
+					values.push(arr);
+				}
 			});
 		}
 		
@@ -76,7 +79,7 @@ class PhScraper {
 				if (err){
 					console.log(err);
 				}else{
-					console.log("storing links was successful!");
+					console.log("storing ph links was successful!");
 				}
 				con.end();
 			});
@@ -132,8 +135,8 @@ class PhScraper {
 								}
 								if(!this.allVideos.includes(obj.post_url)){
 									this.videos[category.category_name].push(obj);
-									this.allVideos.push(obj.post_url);
 								}
+								this.allVideos.push(obj.post_url);
 							}
 						});
 					
