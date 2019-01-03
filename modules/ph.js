@@ -46,7 +46,7 @@ class PhScraper {
 					if (err){
 						console.log(err);
 					}else{
-						console.log("subreddits loaded!");
+						console.log("catgories loaded!");
 						result.forEach((category) => {
 							this.categories.push(category);
 						});
@@ -59,7 +59,31 @@ class PhScraper {
 	}
 
 	save() {
-		console.log(this.videos["Asian"]);
+		let sql = "INSERT INTO npc.resource (url, post_url, source, source_host, date_found, type) VALUES ? ON DUPLICATE KEY UPDATE url=VALUES(url),post_url=VALUES(post_url)",
+			con = this.getConnection(),
+			values = [],
+			dateFound = new Date().toISOString().slice(0, 19).replace('T', ' ')
+
+		for(let category in this.videos){
+			this.videos[category].forEach(video => {
+				values.push([video.url, video.post_url, category, "https://pornhub.com",dateFound,"video"]);
+			});
+		}
+		
+		con.connect(err => {
+			//if (err) console.log(err);
+			con.query(sql, [values], (err, result) => {
+				if (err){
+					console.log(err);
+				}else{
+					console.log("storing links was successful!");
+				}
+				con.end();
+			});
+		});
+		this.categories = []; 
+		this.allVideos = [];
+		this.videos = {};
 	}
 
 	start() {
@@ -77,27 +101,42 @@ class PhScraper {
 						'Connection': 'keep-alive',
 						'Host': 'www.pornhub.com',
 						'Pragma': 'no-cache',
-						'Cookie': "RNKEY=4621439*5812013:1837939381:2942044328:1",
 						'Upgrade-Insecure-Requests': '1',
 						'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
 					}
 				};	 
 				//console.log(this.getCookie());
-				request(options).then(html=>{ //request the page
+				request(options).then(html=>{ //request the page to get the needed cookie
 					let soup = new JSSoup(html),
-						posts = soup.findAll("a");
-						//console.log(category.source);
-					posts.forEach(post =>{
-						if(post.attrs["href"] && post.attrs["href"].includes("viewkey=")){
-							console.log(post.attrs["href"]);
-							
-							let obj = {};
-							obj.post_url = category.attrs["href"];
-							if(post.nextElement.attrs){
-								obj.url = post.nextElement.attrs["title"];
+						script = "(function() {var document = { location: {reload: (v) => {}}, cookie: ''};\n" + soup.find("script").prettify().replace("<script type=\"text/javascript\">","").replace("</script>","").replace("if (isNaN(n) || !isFinite(n)) return NaN;","").replace("if (typeof module !== 'undefined' && module.exports) return 'node'","");
+						
+					let lastBracket = script.lastIndexOf("}"),
+						newScript = script.substr(0,lastBracket) + "return document;}  return go(); })()"; //eval the js that ph sends back to get the needed cookie
+
+					options.headers["Cookie"] = eval(newScript).cookie; //set cookie before requesting next page
+ 
+					request(options).then(html=>{ //request the page
+						let soup = new JSSoup(html),
+							posts = soup.findAll("a");
+					
+						posts.forEach(post =>{
+							if(post && post.attrs["href"] && post.attrs["href"].includes("viewkey=") && post.attrs["href"].trim() !== ""){
+								
+								let obj = {
+									post_url: "",
+									url: ""
+								};
+								obj.post_url = "https://www.pornhub.com/embed/"+post.attrs["href"].split("viewkey=")[1]; //iframe embed link
+								if(post.nextElement.attrs){
+									obj.url = post.nextElement.attrs["title"]; //title of the video if one is found
+								}
+								if(!this.allVideos.includes(obj.post_url)){
+									this.videos[category.category_name].push(obj);
+									this.allVideos.push(obj.post_url);
+								}
 							}
-							this.videos[category.category_name].push(obj);
-						}
+						});
+					
 					});
 					res();
 				}).catch(err=>{
@@ -108,74 +147,6 @@ class PhScraper {
 		});
 		return Promise.all(promises);
 	}
-
-	leastFactor(n) {
-		if (isNaN(n) || !isFinite(n)) return NaN;
-		if (typeof phantom !== 'undefined') return 'phantom';
-		if (typeof module !== 'undefined' && module.exports) return 'node';
-		if (n==0) return 0;
-		if (n%1 || n*n<2) return 1;
-		if (n%2==0) return 2;
-		if (n%3==0) return 3;
-		if (n%5==0) return 5;
-		var m=Math.sqrt(n);
-		for (var i=7;i<=m;i+=30) {
-		 if (n%i==0)      return i;
-		 if (n%(i+4)==0)  return i+4;
-		 if (n%(i+6)==0)  return i+6;
-		 if (n%(i+10)==0) return i+10;
-		 if (n%(i+12)==0) return i+12;
-		 if (n%(i+16)==0) return i+16;
-		 if (n%(i+22)==0) return i+22;
-		 if (n%(i+24)==0) return i+24;
-		}
-		return n;
-	   }
-	getCookie() {
-		var p=1237761925422; var s=1421282938; var n;
-	   if ((s >> 0) & 1)/*
-	   else p-=
-	   */p+=
-	   228043235*/*
-	   p+= */3;/* 120886108*
-	   */else /*
-	   else p-=
-	   */p-=   684214321*/* 120886108*
-	   */1;/* 120886108*
-	   */if ((s >> 13) & 1)/*
-	   else p-=
-	   */p+=85887202*
-	   14;/*
-	   else p-=
-	   */else p-=/*
-	   else p-=
-	   */36451571*/* 120886108*
-	   */14;/* 120886108*
-	   */if ((s >> 5) & 1)     p+=/* 120886108*
-	   */187894358*/*
-	   p+= */6;        else  p-= 1901854*
-	   6;/*
-	   else p-=
-	   */if ((s >> 4) & 1)/*
-	   else p-=
-	   */p+= 260748112*
-	   7;/*
-	   else p-=
-	   */else p-=/*
-	   else p-=
-	   */215931160*    5;
-	   if ((s >> 14) & 1)/*
-	   *13;
-	   */p+=
-	   67088211*/*
-	   *13;
-	   */17;/* 120886108*
-	   */else
-	   p-=     16147634*/* 120886108*
-	   */15;    p-=3553843198;
-		n=this.leastFactor(p);
-	   return "RNKEY="+n+"*"+p/n+":"+s+":2523374263:1";
-	   }
 	   
 
 }
