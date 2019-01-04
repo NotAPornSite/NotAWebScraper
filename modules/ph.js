@@ -59,7 +59,7 @@ class PhScraper {
 	}
 
 	save() {
-		let sql = "INSERT INTO npc.resource (url, post_url, source, source_host, date_found, type) VALUES ? ON DUPLICATE KEY UPDATE url=VALUES(url),post_url=VALUES(post_url)",
+		let sql = "INSERT IGNORE INTO npc.resource (url, post_url, source, source_host, date_found, type) VALUES ?",
 			con = this.getConnection(),
 			values = [],
 			dateFound = new Date().toISOString().slice(0, 19).replace('T', ' '),
