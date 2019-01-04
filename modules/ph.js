@@ -132,7 +132,7 @@ class PhScraper {
 									url: ""
 								};
 								obj.post_url = "https://www.pornhub.com/embed/"+post.attrs["href"].split("viewkey=")[1]; //iframe embed link
-								if(post.nextElement.attrs){
+								if(post.nextElement && post.nextElement.attrs){
 									obj.url = post.nextElement.attrs["title"]; //title of the video if one is found
 								}
 								if(!this.allVideos.includes(obj.post_url)){
